@@ -13,8 +13,7 @@
 
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
-  nested structure. keys is a sequence of keys. Any empty maps that result
-  will not be present in the new structure."
+  nested structure."
   [m [k & ks :as keys]]
   (if ks
     (if-let [nextmap (get m k)]
@@ -34,10 +33,9 @@
    (map? m) (for [[k v] m
                   tail (or (paths v) [nil])]
               (cons k tail))))
-;; TODO: find set paths, and make leaves sets
 
 (defn strip
-  "Dissocs all key paths in remove from m."
+  "Dissocs all key paths from m."
   [m remove]
   (reduce dissoc-in m (paths remove)))
 
@@ -65,6 +63,12 @@
                             :when (or more (not replace))]
                         [k (or more 1)]))]
       (into {} s))))
+
+(defn adds
+  "Replace sequence representation"
+  [add]
+;; TODO
+  ())
 
 (defn diff
   "Creates a patch that can be applied with patch.
