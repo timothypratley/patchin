@@ -11,7 +11,7 @@ Add patchin as a dependency to your project:
 (ns my.namespace
   (:require [patchin :as patchin]))
 
-(def p (patchin/diff {:old {:x 1} {:new {:x 2}))
+(def p (patchin/diff {:old {:x 1} :new {:x 2}}))
 (patchin/patch {:my "data"} p)
 ```
 
