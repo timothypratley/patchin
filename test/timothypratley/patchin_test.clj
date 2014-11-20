@@ -1,6 +1,6 @@
-(ns patchin-test
+(ns timothypratley.patchin-test
   (:require
-   [patchin :refer :all]
+   [timothypratley.patchin :refer :all]
    [clojure.test :refer :all]))
 
 (deftest test-discard

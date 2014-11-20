@@ -1,4 +1,4 @@
-(ns patchin
+(ns timothypratley.patchin
   "Creates and applies patches to datastructures."
   (:require
    [clojure.data :as data]
