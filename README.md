@@ -1,6 +1,8 @@
 # patchin
 
-Creates and applies patches to nested maps.
+Creates and applies patches to nested data structures.
+
+Identifies key paths to remove, key/values to add, or full replacement.
 
 ## Usage
 

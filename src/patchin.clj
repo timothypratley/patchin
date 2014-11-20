@@ -1,6 +1,9 @@
 (ns patchin
   "Creates and applies patches to datastructures."
-  (:require [clojure.data :as data]))
+  (:require
+   [clojure.data :as data]
+   [clojure.set :refer [union]]
+   [clojure.test :refer [is]]))
 
 (defn discard
   "Like dissoc, but also works for sets and sequences."
@@ -34,53 +37,71 @@
                   tail (or (paths v) [nil])]
               (cons k tail))))
 
+;; TODO: m
 (defn strip
   "Dissocs all key paths from m."
   [m remove]
   (reduce dissoc-in m (paths remove)))
 
 (defn deep-merge
-  "Recursively merges maps. If not maps, the last value wins."
+  "Recursively merges maps. Unions sets. Last value wins."
   [& vals]
-  (if (every? map? vals)
-    (apply merge-with deep-merge vals)
-    (last vals)))
+  (cond
+   (every? map? vals)
+   (apply merge-with deep-merge vals)
+
+   (every? set? vals)
+   (apply union vals)
+
+   :else
+   (last vals)))
 
 (defn patch
   "Updates a map by removal of keys and addition of values."
   [m [remove add]]
-  (deep-merge (strip m remove) add))
+  (if add
+    (deep-merge (strip m remove) add)
+    remove))
 
 (defn disses
   "Given nested maps of keys to remove and add,
   calculates the nested sequence of keys
   that need to be dissoced."
   [remove add]
-  (when (map? remove)
-    (when-let [s (seq (for [[k v] remove
-                            :let [replace (get add k)
-                                  more (disses v replace)]
-                            :when (or more (not replace))]
-                        [k (or more 1)]))]
-      (into {} s))))
+  (cond
+   (map? remove)
+   (when-let [s (seq (for [[k v] remove
+                           :let [replace (get add k)
+                                 more (disses v replace)]
+                           :when (or more (not replace))]
+                       [k (or more 1)]))]
+     (into {} s))
 
-(defn adds
-  "Replace sequence representation"
-  [add]
-;; TODO
-  ())
-
-(defn diff
-  "Creates a patch that can be applied with patch.
-  A patch is [discards additions]"
-  [a b]
-  (let [[remove add] (data/diff a b)
-        p [(disses remove add) add]]
-    (assert (= b (patch a p))
-            "Failed to create patch")
-    p))
+   (set? remove)
+   remove))
 
 (defn smaller?
   "Is patch p smaller than the final state m?"
   [p m]
   (< (count (pr-str p)) (count (pr-str m))))
+
+(defn diff
+  "Creates a patch that can be applied with patch.
+  A patch is [discards additions].
+  discards is a map of keys to remove, possibly nested.
+  additions can be a value that replaces the existing value,
+  or a map, possibly nested, of values to add or replace.
+  Sequences are treated as values."
+  [a b]
+  ;; TODO: use a better seq diff
+  ;; TODO: sequences of maps
+  (with-redefs [data/diff-sequential #'data/atom-diff]
+    (let [[remove add] (data/diff a b)
+          ;; TODO: sadly nil can be a value, not supported yet
+          ;; TODO: what does [nil nil] mean? (drop all?)
+          p [(disses remove add) (or add {})]]
+      (assert (is (= b (patch a p)))
+              (str "Patch failed: " (pr-str p)))
+      (if (smaller? p [b])
+        p
+        [b]))))
