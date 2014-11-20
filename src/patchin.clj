@@ -99,9 +99,10 @@
     (let [[remove add] (data/diff a b)
           ;; TODO: sadly nil can be a value, not supported yet
           ;; TODO: what does [nil nil] mean? (drop all?)
-          p [(disses remove add) (or add {})]]
-      (assert (is (= b (patch a p)))
-              (str "Patch failed: " (pr-str p)))
-      (if (smaller? p [b])
+          p [(disses remove add) (or add {})]
+          success (is (= b (patch a p)))]
+      (when-not success
+        (println "Patch failed: " (pr-str p)))
+      (if (and success (smaller? p [b]))
         p
         [b]))))

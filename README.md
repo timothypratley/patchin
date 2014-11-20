@@ -1,8 +1,17 @@
 # patchin
 
-Creates and applies patches to nested data structures.
+Creates and applies patches for nested data structures.
+`(= (patch a (diff a b)) b)`
 
-Identifies key paths to remove, key/values to add, or full replacement.
+Works with nested maps, sets, sequences and values.
+
+Useful for streaming updates between a client/server to keep a data model
+synchronized.
+
+Patches are never larger than the original data structure.
+
+Map/set patches are efficient, avoid sequence patches where possible.
+
 
 ## Usage
 
@@ -13,9 +22,10 @@ Add patchin as a dependency to your project:
 (ns my.namespace
   (:require [patchin :as patchin]))
 
-(def p (patchin/diff {:old {:x 1} {:new {:x 2}))
-(patchin/patch {:my "data"} p)
+(let [p (patchin/diff {:old {:x 1} {:new {:x 2}))]
+  (patchin/patch {:my "data"} p))
 ```
+
 
 ## License
 
