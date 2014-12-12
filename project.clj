@@ -4,9 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]]
-  :aliases {"build-once" ["cljx" "once"]
-            "deploy-lib" ["do" "build-once," "deploy" "clojars"]}
-  :profiles {:dev {:plugins [[com.keminglabs/cljx "0.4.0" :exclusions [org.clojure/clojure]]]}}
+  :aliases {"cleantest"  ["do"  "clean,"  "cljx"  "once,"  "test,"  "cljsbuild"  "test"]}
+  :profiles {:dev {:plugins [[com.keminglabs/cljx "0.5.0"]]}}
   :cljx {:builds [{:source-paths ["src" "test"]
                    :rules :clj
                    :output-path "target/classes"}
