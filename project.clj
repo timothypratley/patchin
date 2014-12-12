@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]]
   :aliases {"build-once" ["cljx" "once"]
             "deploy-lib" ["do" "build-once," "deploy" "clojars"]}
-  :profiles {:dev {:plugins [[com.keminglabs/cljx "0.4.0"]]}}
+  :profiles {:dev {:plugins [[com.keminglabs/cljx "0.4.0" :exclusions [org.clojure/clojure]]]}}
   :cljx {:builds [{:source-paths ["src" "test"]
                    :rules :clj
                    :output-path "target/classes"}
