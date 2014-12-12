@@ -15,7 +15,7 @@ Create, transmit, apply data changes between your browser and server.
 ## Usage
 
 Add patchin as a dependency to your project:
-    `[timothypratley.patchin "0.1.0"]`
+    `[timothypratley.patchin "0.2.0"]`
 
 ```clj
 (ns my.namespace
