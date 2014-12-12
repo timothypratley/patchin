@@ -2,8 +2,7 @@
   "Creates and applies patches to datastructures."
   (:require
    [clojure.data :as data]
-   [clojure.set :refer [union]]
-   [clojure.test :refer [is]]))
+   [clojure.set :refer [union]]))
 
 (defn discard
   "Like dissoc, but also works for sets and sequences."
@@ -95,14 +94,14 @@
   [a b]
   ;; TODO: use a better seq diff
   ;; TODO: sequences of maps
-  (with-redefs [data/diff-sequential #'data/atom-diff]
+  (with-redefs [data/diff-sequential #+clj (var data/atom-diff) #+cljs data/atom-diff]
     (let [[remove add] (data/diff a b)
           ;; TODO: sadly nil can be a value, not supported yet
           ;; TODO: what does [nil nil] mean? (drop all?)
           p [(disses remove add) (or add {})]
-          success (is (= b (patch a p)))]
+          success (= b (patch a p))]
       (when-not success
-        (println "Patch failed: " (pr-str p)))
+        (prn "Patch failed: " a b p))
       (if (and success (smaller? p [b]))
         p
         [b]))))
