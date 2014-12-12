@@ -1,9 +1,10 @@
-(defproject patchin "0.2.3"
+(defproject timothypratley/patchin "0.3.0-SNAPSHOT"
   :description "Creates and applies patches to datastructures"
   :url "http://github.com/timothypratley/patchin"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]]
+  :min-lein-version  "2.0.0"
   :aliases {"cleantest"  ["do"  "clean,"  "test,"  "cljsbuild"  "test"]}
   :profiles {:dev {:plugins [[com.keminglabs/cljx "0.5.0"]]}}
   :source-paths ["target/generated/src"]

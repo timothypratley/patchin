@@ -15,7 +15,7 @@ Create, transmit, apply data changes between your browser and server.
 ## Usage
 
 Add patchin as a dependency to your project:
-    `[timothypratley.patchin "0.2.3"]`
+[![Clojars Project](http://clojars.org/timothypratley/patchin/latest-version.svg)](http://clojars.org/timothypratley/patchin)
 
 ```clj
 (ns my.namespace
