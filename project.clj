@@ -1,4 +1,4 @@
-(defproject timothypratley/patchin "0.3.1-SNAPSHOT"
+(defproject timothypratley/patchin "0.3.1"
   :description "Creates and applies patches to datastructures"
   :url "http://github.com/timothypratley/patchin"
   :license {:name "Eclipse Public License"
