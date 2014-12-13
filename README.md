@@ -21,8 +21,11 @@ Add patchin as a dependency to your project:
 (ns my.namespace
   (:require [timothypratley.patchin :as patchin]))
 
-(let [p (patchin/diff {:old {:x 1} {:new {:x 2}))]
-  (patchin/patch {:my "data"} p))
+;; create patches
+(patchin/diff a b)
+
+;; apply patches
+(patchin/patch a p)
 ```
 
 `p` is intended for transmission over a network.
