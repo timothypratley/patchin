@@ -19,10 +19,7 @@
   [m [k & ks :as keys]]
   (if ks
     (if-let [nextmap (get m k)]
-      (let [newmap (dissoc-in nextmap ks)]
-        (if (seq newmap)
-          (assoc m k newmap)
-          (discard m k)))
+      (assoc m k (dissoc-in nextmap ks))
       m)
     (discard m k)))
 
@@ -84,6 +81,14 @@
   [p m]
   (< (count (pr-str p)) (count (pr-str m))))
 
+(defn adds [x]
+  (if (map? x)
+    (into {}
+          (for [[k v] x
+                :when (not (nil? v))]
+            [k (adds v)]))
+    x))
+
 (defn diff
   "Creates a patch that can be applied with patch.
   A patch is [discards additions].
@@ -98,7 +103,7 @@
     (let [[remove add] (data/diff a b)
           ;; TODO: sadly nil can be a value, not supported yet
           ;; TODO: what does [nil nil] mean? (drop all?)
-          p [(disses remove add) (or add {})]
+          p [(disses remove add) (or (adds add) {})]
           success (= b (patch a p))]
       (when-not success
         (prn "Patch failed: " a b p))

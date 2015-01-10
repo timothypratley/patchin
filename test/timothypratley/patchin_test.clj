@@ -86,3 +86,23 @@
         "should patch complex map")
     (is (not (smaller? [y] p))
         "should patch efficiently")))
+
+(deftest test-empty-map
+  (let [a {:foo {:bar "fun"}
+           :baz "YAHAHAHAHAHAHAHAHAHAHaaa"}
+        b {:foo {}
+           :baz "YAHAHAHAHAHAHAHAHAHAHaaa"}
+        expected-patch [{:foo {:bar 1}} {}]
+        p (diff a b)
+        warning (with-out-str (diff a b))]
+    (is (= b (patch a expected-patch)))
+    (is (= expected-patch p))
+    (is (empty? warning))))
+
+(deftest test-empty-remove
+  (let [a {:foo "bar"
+           :baz "booz"}
+        b {:foo "bar"}
+        p (diff a b)
+        expected-p [{:baz 1} {}]]
+    (is (= expected-p p))))
