@@ -33,7 +33,6 @@
                   tail (or (paths v) [nil])]
               (cons k tail))))
 
-;; TODO: m
 (defn strip
   "Dissocs all key paths from m."
   [m remove]
@@ -65,29 +64,33 @@
   that need to be dissoced."
   [remove add]
   (cond
-   (map? remove)
-   (when-let [s (seq (for [[k v] remove
-                           :let [replace (get add k)
-                                 more (disses v replace)]
-                           :when (or more (not replace))]
-                       [k (or more 1)]))]
-     (into {} s))
-
-   (set? remove)
-   remove))
+    (map? remove) (when-let [s (seq (for [[k v] remove
+                                          :let [replace (get add k)
+                                                more (disses v replace)]
+                                          :when (or more (not replace))]
+                                      [k (or more 1)]))]
+                    (into {} s))
+    (set? remove) remove))
 
 (defn smaller?
   "Is patch p smaller than the final state m?"
   [p m]
   (< (count (pr-str p)) (count (pr-str m))))
 
-(defn adds [x]
-  (if (map? x)
-    (into {}
-          (for [[k v] x
-                :when (not (nil? v))]
-            [k (adds v)]))
-    x))
+(defn dak
+  "Diff associative things a and b, comparing only the key k."
+  [a b k]
+  (let [va (get a k)
+        vb (get b k)
+        [a* b* ab] (clojure.data/diff va vb)
+        in-a (contains? a k)
+        in-b (contains? b k)
+        same (and in-a in-b
+                  (or (not (nil? ab))
+                      (and (nil? va) (nil? vb))))]
+    [(when (and in-a (or (not (nil? a*)) (and (not same) (nil? va)))) {k a*})
+     (when (and in-b (or (not (nil? b*)) (and (not same) (nil? vb)))) {k b*})
+     (when same {k ab})]))
 
 (defn diff
   "Creates a patch that can be applied with patch.
@@ -99,11 +102,10 @@
   [a b]
   ;; TODO: use a better seq diff
   ;; TODO: sequences of maps
-  (with-redefs [data/diff-sequential #+clj (var data/atom-diff) #+cljs data/atom-diff]
+  (with-redefs [data/diff-sequential #+clj (var data/atom-diff) #+cljs data/atom-diff
+                data/diff-associative-key dak]
     (let [[remove add] (data/diff a b)
-          ;; TODO: sadly nil can be a value, not supported yet
-          ;; TODO: what does [nil nil] mean? (drop all?)
-          p [(disses remove add) (or (adds add) {})]
+          p [(disses remove add) (or add {})]
           success (= b (patch a p))]
       (when-not success
         (prn "Patch failed: " a b p))

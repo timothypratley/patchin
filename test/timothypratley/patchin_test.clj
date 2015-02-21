@@ -106,3 +106,17 @@
         p (diff a b)
         expected-p [{:baz 1} {}]]
     (is (= expected-p p))))
+
+(deftest test-nil
+  (let [a nil
+        b {:foo nil}
+        c {:foo 1}]
+    (is (empty? (with-out-str (diff a b))))
+    (is (empty? (with-out-str (diff c b))))))
+
+(deftest test-nested-nil
+  (let [a {:x {:y 1}}
+        b {:x {}}
+        c {:x nil}]
+    (is (empty? (with-out-str (diff a b))))
+    (is (empty? (with-out-str (diff a c))))))
