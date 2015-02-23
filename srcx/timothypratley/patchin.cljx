@@ -62,15 +62,18 @@
   "Given nested maps of keys to remove and add,
   calculates the nested sequence of keys
   that need to be dissoced."
-  [remove add]
+  [a b remove add]
   (cond
-    (map? remove) (when-let [s (seq (for [[k v] remove
-                                          :let [replace (get add k)
-                                                more (disses v replace)]
-                                          :when (or more (not replace))]
-                                      [k (or more 1)]))]
-                    (into {} s))
-    (set? remove) remove))
+    (nil? b) {}
+    (map? remove) (into {} (for [[k v] remove
+                                 :let [replace (get add k)
+                                       bk (get b k)
+                                       more (and (or (map? bk) (set? bk))
+                                                 (disses (get a k) bk v replace))]
+                                 :when (or (and more (seq more)) (not replace))]
+                             [k (or more 1)]))
+    (set? remove) remove
+    :else {}))
 
 (defn smaller?
   "Is patch p smaller than the final state m?"
@@ -105,7 +108,7 @@
   (with-redefs [data/diff-sequential #+clj (var data/atom-diff) #+cljs data/atom-diff
                 data/diff-associative-key dak]
     (let [[remove add] (data/diff a b)
-          p [(disses remove add) (or add {})]
+          p [(disses a b remove add) (or add {})]
           success (= b (patch a p))]
       (when-not success
         (prn "Patch failed: " a b p))
