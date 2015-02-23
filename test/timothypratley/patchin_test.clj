@@ -134,3 +134,11 @@
         c {:x nil}]
     (is (empty? (with-out-str (diff a b))))
     (is (empty? (with-out-str (diff a c))))))
+
+(deftest test-smart-nil
+  (let [a {:x {:y "22"}, :z "somelargedata"}
+        b {:x nil, :z "somelargedata"}
+        c {:x {:w "22", :z "somelargedata"}}
+        p (diff a b)]
+    (is (= [{} {:x nil}] p))
+    (is (empty? (with-out-str (diff a c))))))

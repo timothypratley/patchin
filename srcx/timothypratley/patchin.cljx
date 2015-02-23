@@ -66,11 +66,10 @@
   (cond
     (nil? b) {}
     (map? remove) (into {} (for [[k v] remove
-                                 :let [replace (get add k)
-                                       bk (get b k)
+                                 :let [bk (get b k)
                                        more (and (or (map? bk) (set? bk))
-                                                 (disses (get a k) bk v replace))]
-                                 :when (or (and more (seq more)) (not replace))]
+                                                 (disses (get a k) bk v (get add k)))]
+                                 :when (or (and more (seq more)) (not (contains? add k)))]
                              [k (or more 1)]))
     (set? remove) remove
     :else {}))
